@@ -6,6 +6,7 @@ import {SafeSearchType, search as duckSearch} from "duck-duck-scrape";
 import {braveSearch} from "./tools/brave-search";
 import {rewriteQuery} from "./tools/query-rewriter";
 import {dedupQueries} from "./tools/jina-dedup";
+import {searxngSearch} from "./tools/searxng-search";
 import {evaluateAnswer, evaluateQuestion} from "./tools/evaluator";
 import {analyzeSteps} from "./tools/error-analyzer";
 import {TokenTracker} from "./utils/token-tracker";
@@ -308,6 +309,9 @@ async function executeSearchQueries(
           break;
         case 'serper':
           results = (await serperSearch(query)).response.organic || [];
+          break;
+        case 'searxng':
+          results = (await searxngSearch(query.q, ['general'], undefined, undefined, context.tokenTracker)).response.results || [];
           break;
         default:
           results = [];

@@ -89,6 +89,23 @@ export interface SearchResponse {
   readableMessage?: string;
 }
 
+export interface SearxngSearchResult {
+  title: string;
+  url: string;
+  content?: string;
+  img_src?: string;
+  thumbnail_src?: string;
+  thumbnail?: string;
+  author?: string;
+  publishedDate?: string;
+}
+
+export interface SearxngSearchResponse {
+  results: SearxngSearchResult[];
+  suggestions: string[];
+  query: string;
+}
+
 export interface BraveSearchResponse {
   web: {
     results: Array<{
@@ -300,4 +317,3 @@ export interface TrackerContext {
   tokenTracker: TokenTracker;
   actionTracker: ActionTracker;
 }
-

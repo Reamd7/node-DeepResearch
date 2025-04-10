@@ -7,10 +7,11 @@
     "JINA_API_KEY": "",
     "BRAVE_API_KEY": "",
     "SERPER_API_KEY": "",
+    "SEARXNG_API_BASE_URL": "http://localhost:28000",
     "DEFAULT_MODEL_NAME": ""
   },
   "defaults": {
-    "search_provider": "jina",
+    "search_provider": "searxng",
     "llm_provider": "gemini",
     "step_sleep": 100
   },

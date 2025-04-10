@@ -26,6 +26,7 @@
   "license": "Apache-2.0",
   "description": "",
   "dependencies": {
+    "@agentic/searxng": "^7.6.3",
     "@ai-sdk/google": "^1.0.0",
     "@ai-sdk/openai": "^1.1.9",
     "@types/jsdom": "^21.1.7",

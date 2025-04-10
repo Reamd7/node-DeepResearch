@@ -33,6 +33,7 @@ flowchart TD
 | Brave搜索 | 使用Brave搜索API | 执行网络搜索、处理结果 | src/tools/brave-search.ts |
 | Serper搜索 | 使用Serper搜索API | 执行Google搜索、处理结果 | src/tools/serper-search.ts |
 | Jina搜索 | 使用Jina AI搜索服务 | 执行语义搜索、处理结果 | src/tools/jina-search.ts |
+| SearXNG搜索 | 使用SearXNG元搜索引擎 | 执行多引擎搜索、处理结果 | src/tools/searxng-search.ts |
 | 搜索测试 | 测试搜索功能 | 验证搜索功能正确性 | src/tools/__tests__/search.test.ts |
 | 类型定义 | 定义搜索相关类型 | 提供类型安全 | src/types.ts |
 
@@ -45,6 +46,7 @@ flowchart TD
 | braveSearch | 使用Brave搜索引擎 | query: string | { response: BraveSearchResponse } | `braveSearch("React教程")` |
 | serperSearch | 使用Serper搜索API | query: SERPQuery | { response: SerperSearchResponse } | `serperSearch({q: "React教程"})` |
 | search | 使用Jina搜索 | query: string, tracker?: TokenTracker | { response: SearchResponse } | `search("React教程", tokenTracker)` |
+| searxngSearch | 使用SearXNG元搜索引擎 | query: string, categories?: string[], engines?: string[], language?: string, tracker?: TokenTracker | { response: SearxngSearchResponse } | `searxngSearch("React教程", ["general"], ["google", "bing"], "zh-CN", tokenTracker)` |
 
 ### 数据结构
 
@@ -58,6 +60,15 @@ type SERPQuery = {
   gl?: string,
   location?: string,
   tbs?: string,
+}
+
+// SearXNG搜索请求
+interface SearxngSearchOptions {
+  query: string;
+  categories?: string[];
+  engines?: string[];
+  language?: string;
+  pageno?: number;
 }
 ```
 
@@ -121,6 +132,25 @@ interface SearchResponse {
   message?: string;
   readableMessage?: string;
 }
+
+// SearXNG搜索结果
+interface SearxngSearchResult {
+  title: string;
+  url: string;
+  content?: string;
+  img_src?: string;
+  thumbnail_src?: string;
+  thumbnail?: string;
+  author?: string;
+  publishedDate?: string;
+}
+
+// SearXNG搜索响应
+interface SearxngSearchResponse {
+  results: SearxngSearchResult[];
+  suggestions: string[];
+  query: string;
+}
 ```
 
 #### 标准化搜索片段
@@ -161,9 +191,11 @@ type BoostedSearchSnippet = SearchSnippet & {
 |---------|------|---------|---------|
 | axios | HTTP客户端 | npm包 | get, post |
 | https | Node.js HTTPS模块 | 内置模块 | request |
+| @agentic/searxng | SearXNG客户端 | npm包 | SearxngClient, search |
 | BRAVE_API_KEY | Brave搜索API密钥 | 环境变量 | - |
 | SERPER_API_KEY | Serper搜索API密钥 | 环境变量 | - |
 | JINA_API_KEY | Jina AI API密钥 | 环境变量 | - |
+| SEARXNG_API_BASE_URL | SearXNG API基础URL | 环境变量 | - |
 
 ### 被依赖情况
 
@@ -270,6 +302,28 @@ flowchart TD
     P --> Q
 ```
 
+### SearXNG搜索流程
+
+```mermaid
+flowchart TD
+    A[开始] --> B[接收查询和参数]
+    B --> C{查询为空?}
+    C -- 是 --> D[抛出错误]
+    C -- 否 --> E[动态导入SearxngClient]
+    E --> F[创建SearXNG客户端]
+    F --> G[执行搜索]
+    G --> H{搜索成功?}
+    H -- 是 --> I[处理搜索结果]
+    H -- 否 --> J[处理错误]
+    I --> K[计算令牌使用情况]
+    K --> L[更新令牌跟踪器]
+    L --> M[返回结果]
+    J --> N[抛出错误]
+    D --> O[结束]
+    N --> O
+    M --> O
+```
+
 ## 配置选项
 
 | 配置项 | 描述 | 默认值 | 可选值 | 影响 |
@@ -277,9 +331,12 @@ flowchart TD
 | BRAVE_API_KEY | Brave搜索API密钥 | 无 | 有效的API密钥 | Brave搜索功能 |
 | SERPER_API_KEY | Serper搜索API密钥 | 无 | 有效的API密钥 | Serper搜索功能 |
 | JINA_API_KEY | Jina AI API密钥 | 无 | 有效的API密钥 | Jina搜索功能 |
+| SEARXNG_API_BASE_URL | SearXNG API基础URL | http://localhost:28000 | 有效的URL | SearXNG搜索功能 |
 | 超时设置 | 请求超时时间 | Brave/Serper: 10000ms, Jina: 30000ms | 任何毫秒值 | 请求超时行为 |
 | 结果数量 | 返回的结果数量 | Brave: 10 | 任何正整数 | 搜索结果数量 |
 | 安全搜索 | 是否启用安全搜索 | Brave: 'off' | 'off', 'moderate', 'strict' | 过滤不适当内容 |
+| 搜索类别 | SearXNG搜索类别 | general | general, images, videos, news, map, music, it, science, files, social media | 搜索结果类型 |
+| 搜索引擎 | SearXNG搜索引擎 | 无 | google, bing, brave, duckduckgo, reddit, github等 | 搜索结果来源 |
 
 ## 错误处理
 
@@ -343,6 +400,7 @@ flowchart TD
 
 | 任务名称 | 描述 | 优先级 | 状态 | 依赖任务 |
 |---------|------|---------|------|---------|
+| SearXNG搜索集成 | 集成SearXNG元搜索引擎 | 高 | 已完成 | 无 |
 | 搜索结果合并 | 实现多提供商结果合并 | 高 | 待实施 | 无 |
 | 搜索结果缓存 | 实现搜索结果缓存 | 中 | 待实施 | 无 |
 | 添加更多提供商 | 集成更多搜索API | 中 | 计划中 | 无 |
@@ -350,9 +408,12 @@ flowchart TD
 | 多语言搜索支持 | 增强多语言搜索能力 | 中 | 计划中 | 无 |
 | 搜索结果过滤 | 实现内容过滤功能 | 低 | 待实施 | 无 |
 | 搜索分析 | 添加搜索使用分析 | 低 | 计划中 | 无 |
+| SearXNG搜索测试 | 测试SearXNG搜索功能 | 高 | 待实施 | SearXNG搜索集成 |
+| SearXNG搜索优化 | 优化SearXNG搜索性能和结果质量 | 中 | 待实施 | SearXNG搜索集成, SearXNG搜索测试 |
 
 ## 修订历史
 
 | 日期 | 版本 | 描述 | 作者 |
 |------|------|------|------|
 | 2025/4/10 | 1.0 | 初始版本 | CRCT系统 |
+| 2025/4/10 | 1.1 | 添加SearXNG搜索功能 | CRCT系统 |
