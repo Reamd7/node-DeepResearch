@@ -1,38 +1,28 @@
-# 模块关系跟踪器
+---KEY_DEFINITIONS_START---
+Key Definitions:
+1A: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src
+1Aa: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/dto
+1Ab: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib
+1B: /Users/gemini/Documents/ai-infra/node-DeepResearch/src
+1Ba: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/__tests__
+1Bb: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/evals
+1Bc: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools
+1Bd: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/utils
+2Ca: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools/__tests__
+---KEY_DEFINITIONS_END---
 
-## 概述
+last_KEY_edit: Assigned keys: 1A, 1Aa, 1Ab, 1B, 1Ba, 1Bb, 1Bc, 1Bd, 2Ca
+last_GRID_edit: Applied suggestions (2025-04-10T15:48:25.679842)
 
-本文件跟踪项目中模块级别的依赖关系。依赖关系使用以下字符表示：
-
-- `<`: 行依赖于列
-- `>`: 列依赖于行
-- `x`: 相互依赖
-- `d`: 文档依赖
-- `o`: 自依赖（仅对角线）
-- `n`: 已验证无依赖
-- `p`: 占位符（未验证）
-- `s`: 语义依赖
-
-## 依赖矩阵
-
-| 键 | 模块 | 1Aa | 1Ab | 1Ac | 1Ad | 1Ae | 1Af | 1Ag |
-|----|------|-----|-----|-----|-----|-----|-----|-----|
-| 1Aa | src/app.ts | o | p | p | p | p | p | p |
-| 1Ab | src/agent.ts | p | o | p | p | p | p | p |
-| 1Ac | src/server.ts | p | p | o | p | p | p | p |
-| 1Ad | src/config.ts | p | p | p | o | p | p | p |
-| 1Ae | src/cli.ts | p | p | p | p | o | p | p |
-| 1Af | src/tools/ | p | p | p | p | p | o | p |
-| 1Ag | jina-ai/src/ | p | p | p | p | p | p | o |
-
-## 注意事项
-
-- 此跟踪器是初始版本，包含占位符（p）表示未验证的依赖关系
-- 需要使用依赖处理器工具进行完整分析
-- 后续更新将替换占位符为实际依赖关系
-
-## 更新历史
-
-| 日期 | 更新者 | 更新内容 |
-|------|-------|---------|
-| 2025-04-10 | CRCT系统 | 创建初始版本 |
+---GRID_START---
+X 1A 1Aa 1Ab 1B 1Ba 1Bb 1Bc 1Bd 2Ca
+1A = ox>SppSpp
+1Aa = xo>p6
+1Ab = <<oSppSpp
+1B = ppSo<<xx<
+1Ba = p3>op>pS
+1Bb = p3>popps
+1Bc = ppSx<pox<
+1Bd = p3xppxo<
+2Ca = p8o
+---GRID_END---
