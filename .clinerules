@@ -1,7 +1,7 @@
 [LAST_ACTION_STATE]
-last_action: "创建模块文档"
+last_action: "创建搜索功能实现计划"
 current_phase: "Strategy"
-next_action: "创建实现计划"
+next_action: "创建更多核心功能的实现计划"
 next_phase: "Strategy"
 
 [CODE_ROOT_DIRECTORIES]
@@ -9,7 +9,7 @@ next_phase: "Strategy"
 - jina-ai/src
 
 [DOC_DIRECTORIES]
-- 
+- docs
 
 [LEARNING_JOURNAL]
 - 定期更新 cline_docs 目录和指令文件有助于我记住已完成的工作和待完成的任务，避免丢失跟踪。
