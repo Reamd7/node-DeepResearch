@@ -6,13 +6,9 @@ type BaseAction = {
   think: string;
 };
 
-export type SERPQuery = {
-  q: string,
-  hl?: string,
-  gl?: string,
-  location?: string,
-  tbs?: string,
-}
+// SERPQuery 类型已移至 src/services/search/types.ts
+import { SERPQuery } from './services/search/types';
+export { SERPQuery };
 
 export type SearchAction = BaseAction & {
   action: "search";
@@ -74,77 +70,7 @@ export interface TokenUsage {
   usage: LanguageModelUsage;
 }
 
-export interface SearchResponse {
-  code: number;
-  status: number;
-  data: Array<{
-    title: string;
-    description: string;
-    url: string;
-    content: string;
-    usage: { tokens: number; };
-  }> | null;
-  name?: string;
-  message?: string;
-  readableMessage?: string;
-}
-
-export interface SearxngSearchResult {
-  title: string;
-  url: string;
-  content?: string;
-  img_src?: string;
-  thumbnail_src?: string;
-  thumbnail?: string;
-  author?: string;
-  publishedDate?: string;
-}
-
-export interface SearxngSearchResponse {
-  results: SearxngSearchResult[];
-  suggestions: string[];
-  query: string;
-}
-
-export interface BraveSearchResponse {
-  web: {
-    results: Array<{
-      title: string;
-      description: string;
-      url: string;
-    }>;
-  };
-}
-
-export interface SerperSearchResponse {
-  knowledgeGraph?: {
-    title: string;
-    type: string;
-    website: string;
-    imageUrl: string;
-    description: string;
-    descriptionSource: string;
-    descriptionLink: string;
-    attributes: { [k: string]: string; };
-  },
-  organic: {
-    title: string;
-    link: string;
-    snippet: string;
-    date: string;
-    siteLinks?: { title: string; link: string; }[];
-    position: number,
-  }[];
-  topStories?: {
-    title: string;
-    link: string;
-    source: string;
-    data: string;
-    imageUrl: string;
-  }[];
-  relatedSearches?: string[];
-  credits: number;
-}
+// 这些搜索响应接口已移至 src/services/search/types.ts
 
 
 export interface ReadResponse {
@@ -196,28 +122,18 @@ export type ErrorAnalysisResponse = {
 };
 
 
-export type UnNormalizedSearchSnippet = {
-  title: string;
-  url?: string;
-  description?: string;
-  link?: string;
-  snippet?: string;
-  weight?: number,
-  date?: string
-};
+// 搜索相关类型已移至 src/services/search/types.ts
+import { 
+  UnNormalizedSearchSnippet, 
+  SearchSnippet, 
+  BoostedSearchSnippet 
+} from './services/search/types';
 
-export type SearchSnippet = UnNormalizedSearchSnippet& {
-  url: string;
-  description: string;
+export { 
+  UnNormalizedSearchSnippet, 
+  SearchSnippet, 
+  BoostedSearchSnippet 
 };
-
-export type BoostedSearchSnippet = SearchSnippet & {
-  freqBoost: number;
-  hostnameBoost: number;
-  pathBoost: number;
-  jinaRerankBoost: number;
-  finalScore: number;
-}
 
 // OpenAI API Types
 export interface Model {

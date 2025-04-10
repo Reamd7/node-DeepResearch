@@ -1,12 +1,9 @@
 import {ZodObject} from 'zod';
 import {CoreMessage} from 'ai';
-import {SEARCH_PROVIDER, STEP_SLEEP} from "./config";
+import {STEP_SLEEP} from "./config";
 import fs from 'fs/promises';
-import {SafeSearchType, search as duckSearch} from "duck-duck-scrape";
-import {braveSearch} from "./tools/brave-search";
 import {rewriteQuery} from "./tools/query-rewriter";
 import {dedupQueries} from "./tools/jina-dedup";
-import {searxngSearch} from "./tools/searxng-search";
 import {evaluateAnswer, evaluateQuestion} from "./tools/evaluator";
 import {analyzeSteps} from "./tools/error-analyzer";
 import {TokenTracker} from "./utils/token-tracker";
@@ -20,12 +17,11 @@ import {
   SearchSnippet, EvaluationResponse, Reference, SERPQuery, RepeatEvaluationType, UnNormalizedSearchSnippet
 } from "./types";
 import {TrackerContext} from "./types";
-import {search} from "./tools/jina-search";
 // import {grounding} from "./tools/grounding";
 import {zodToJsonSchema} from "zod-to-json-schema";
 import {ObjectGeneratorSafe} from "./utils/safe-generator";
 import {CodeSandbox} from "./tools/code-sandbox";
-import {serperSearch} from './tools/serper-search';
+import { SearchService } from './services/search';
 import {
   addToAllURLs,
   rankURLs,
@@ -274,7 +270,7 @@ async function updateReferences(thisStep: AnswerAction, allURLs: Record<string, 
 }
 
 async function executeSearchQueries(
-  keywordsQueries: any[],
+  keywordsQueries: SERPQuery[],
   context: TrackerContext,
   allURLs: Record<string, SearchSnippet>,
   SchemaGen: Schemas,
@@ -284,88 +280,35 @@ async function executeSearchQueries(
   searchedQueries: string[]
 }> {
   const uniqQOnly = keywordsQueries.map(q => q.q);
-  const newKnowledge: KnowledgeItem[] = [];
-  const searchedQueries: string[] = [];
   context.actionTracker.trackThink('search_for', SchemaGen.languageCode, {keywords: uniqQOnly.join(', ')});
-  let utilityScore = 0;
-  for (const query of keywordsQueries) {
-    let results: UnNormalizedSearchSnippet[] = [];
-    const oldQuery = query.q;
-    if (onlyHostnames && onlyHostnames.length > 0) {
-      query.q = `${query.q} site:${onlyHostnames.join(' OR site:')}`;
-    }
-
-    try {
-      console.log('Search query:', query);
-      switch (SEARCH_PROVIDER) {
-        case 'jina':
-          results = (await search(query.q, context.tokenTracker)).response?.data || [];
-          break;
-        case 'duck':
-          results = (await duckSearch(query.q, {safeSearch: SafeSearchType.STRICT})).results;
-          break;
-        case 'brave':
-          results = (await braveSearch(query.q)).response.web?.results || [];
-          break;
-        case 'serper':
-          results = (await serperSearch(query)).response.organic || [];
-          break;
-        case 'searxng':
-          results = (await searxngSearch(query.q, ['general'], undefined, undefined, context.tokenTracker)).response.results || [];
-          break;
-        default:
-          results = [];
-      }
-
-      if (results.length === 0) {
-        throw new Error('No results found');
-      }
-    } catch (error) {
-      console.error(`${SEARCH_PROVIDER} search failed for query:`, query, error);
-      continue;
-    } finally {
-      await sleep(STEP_SLEEP);
-    }
-
-    const minResults: SearchSnippet[] = results
-      .map(r => {
-        const url = normalizeUrl('url' in r ? r.url! : r.link!);
-        if (!url) return null; // Skip invalid URLs
-
-        return {
-          title: r.title,
-          url,
-          description: 'description' in r ? r.description : r.snippet,
-          weight: 1,
-          date: r.date,
-        } as SearchSnippet;
-      })
-      .filter(Boolean) as SearchSnippet[]; // Filter out null entries and assert type
-
-    minResults.forEach(r => {
-      utilityScore = utilityScore + addToAllURLs(r, allURLs);
-    });
-
-    searchedQueries.push(query.q)
-
-    newKnowledge.push({
-      question: `What do Internet say about "${oldQuery}"?`,
-      answer: removeHTMLtags(minResults.map(r => r.description).join('; ')),
-      type: 'side-info',
-      updated: query.tbs ? formatDateRange(query) : undefined
-    });
-  }
+  
+  // 创建搜索服务实例
+  const searchService = new SearchService(context.tokenTracker);
+  
+  // 使用搜索服务执行搜索查询
+  const { newKnowledge: rawKnowledge, searchedQueries } = await searchService.executeSearchQueries(
+    keywordsQueries,
+    context,
+    allURLs,
+    onlyHostnames
+  );
+  
+  // 转换知识条目格式
+  const newKnowledge: KnowledgeItem[] = rawKnowledge.map(item => ({
+    ...item,
+    answer: removeHTMLtags(item.answer)
+  }));
+  
+  // 处理无结果情况
   if (searchedQueries.length === 0) {
     if (onlyHostnames && onlyHostnames.length > 0) {
       console.log(`No results found for queries: ${uniqQOnly.join(', ')} on hostnames: ${onlyHostnames.join(', ')}`);
       context.actionTracker.trackThink('hostnames_no_results', SchemaGen.languageCode, {hostnames: onlyHostnames.join(', ')});
     }
-  } else {
-    console.log(`Utility/Queries: ${utilityScore}/${searchedQueries.length}`);
-    if (searchedQueries.length > MAX_QUERIES_PER_STEP) {
-      console.log(`So many queries??? ${searchedQueries.map(q => `"${q}"`).join(', ')}`)
-    }
+  } else if (searchedQueries.length > MAX_QUERIES_PER_STEP) {
+    console.log(`So many queries??? ${searchedQueries.map(q => `"${q}"`).join(', ')}`);
   }
+  
   return {
     newKnowledge,
     searchedQueries

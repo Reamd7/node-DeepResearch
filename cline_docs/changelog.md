@@ -4,6 +4,37 @@
 
 ## 2025年4月10日
 
+### 搜索功能重构
+
+- **描述**: 将分散的搜索工具整合到统一的搜索服务中，实现多提供商结果合并功能
+- **原因**: 提高代码模块化和可维护性，实现搜索功能实现计划中的高优先级任务
+- **影响文件**:
+  - 新增文件:
+    - `src/services/index.ts`
+    - `src/services/search/base-provider.ts`
+    - `src/services/search/index.ts`
+    - `src/services/search/search-service.ts`
+    - `src/services/search/types.ts`
+    - `src/services/search/__tests__/search-service.test.ts`
+    - `src/services/search/providers/brave-provider.ts`
+    - `src/services/search/providers/duck-provider.ts`
+    - `src/services/search/providers/index.ts`
+    - `src/services/search/providers/jina-provider.ts`
+    - `src/services/search/providers/searxng-provider.ts`
+    - `src/services/search/providers/serper-provider.ts`
+    - `src/examples/search-service-example.ts`
+  - 修改文件:
+    - `src/agent.ts`
+    - `src/__tests__/agent.test.ts`
+    - `src/tools/__tests__/search.test.ts`
+    - `src/types.ts`
+    - `src/utils/url-tools.ts`
+  - 删除文件:
+    - `src/tools/brave-search.ts`
+    - `src/tools/jina-search.ts`
+    - `src/tools/searxng-search.ts`
+    - `src/tools/serper-search.ts`
+
 ### CRCT系统初始化
 
 - **描述**: 初始化CRCT系统，创建核心文件和目录结构

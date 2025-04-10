@@ -37,47 +37,47 @@
 
 ---KEY_DEFINITIONS_START---
 Key Definitions:
-1A1: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/patch-express.ts
-1A2: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/rate-limit.ts
-1Aa1: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/dto/jina-embeddings-auth.ts
-1Ab: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib
-1Ab1: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/async-context.ts
-1Ab2: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/billing.ts
-1Ab3: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/env-config.ts
-1Ab4: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/errors.ts
-1Ab5: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/firestore.ts
-1Ab6: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/logger.ts
-1Ab7: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/registry.ts
-1B4: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/config.ts
-1Bc8: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools/jina-classify-spam.ts
-1Bc9: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools/jina-dedup.ts
-1Bc11: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools/jina-rerank.ts
-1Bc12: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools/jina-search.ts
-1Bc15: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools/read.ts
+1B1: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/patch-express.ts
+1B2: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/rate-limit.ts
+1Ba1: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/dto/jina-embeddings-auth.ts
+1Bb: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib
+1Bb1: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/async-context.ts
+1Bb2: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/billing.ts
+1Bb3: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/env-config.ts
+1Bb4: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/errors.ts
+1Bb5: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/firestore.ts
+1Bb6: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/logger.ts
+1Bb7: /Users/gemini/Documents/ai-infra/node-DeepResearch/jina-ai/src/lib/registry.ts
+1C4: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/config.ts
+1Cd7: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools/jina-classify-spam.ts
+1Cd8: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools/jina-dedup.ts
+1Cd10: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools/jina-rerank.ts
+1Cd13: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/tools/read.ts
+3Ab4: /Users/gemini/Documents/ai-infra/node-DeepResearch/src/services/search/providers/jina-provider.ts
 ---KEY_DEFINITIONS_END---
 
-last_KEY_edit: Assigned keys: 1A1, 1A2, 1Aa1, 1Ab, 1Ab1, 1Ab2, 1Ab3, 1Ab4, 1Ab5, 1Ab6, 1Ab7, 1B4, 1Bc8, 1Bc9, 1Bc11, 1Bc12, 1Bc15
-last_GRID_edit: Applied suggestions (2025-04-10T15:48:25.617186)
+last_KEY_edit: Assigned keys: 1B1, 1B2, 1Ba1, 1Bb, 1Bb1, 1Bb2, 1Bb3, 1Bb4, 1Bb5, 1Bb6, 1Bb7, 1C4, 1Cd7, 1Cd8, 1Cd10, 1Cd13, 3Ab4
+last_GRID_edit: Applied suggestions (2025-04-10T18:48:28.338127)
 
 ---GRID_START---
-X 1A1 1A2 1Aa1 1Ab 1Ab1 1Ab2 1Ab3 1Ab4 1Ab5 1Ab6 1Ab7 1B4 1Bc8 1Bc9 1Bc11 1Bc12 1Bc15
-1A1 = op16
-1A2 = pop15
-1Aa1 = ppop14
-1Ab = p3op13
-1Ab1 = <p<pop12
-1Ab2 = Ss<ppop6SsS3
-1Ab3 = pp<p3op4Sp5
-1Ab4 = <<sp4op9
-1Ab5 = <3p5op8
-1Ab6 = <3p6op7
-1Ab7 = pp<p7op6
-1B4 = p11op5
-1Bc8 = p12op4
-1Bc9 = p13op3
-1Bc11 = p14opp
-1Bc12 = p15op
-1Bc15 = p16o
+X 1B1 1B2 1Ba1 1Bb 1Bb1 1Bb2 1Bb3 1Bb4 1Bb5 1Bb6 1Bb7 1C4 1Cd7 1Cd8 1Cd10 1Cd13 3Ab4
+1B1 = op16
+1B2 = pop15
+1Ba1 = ppop14
+1Bb = p3op13
+1Bb1 = <p<pop12
+1Bb2 = Ss<ppop6SsS3
+1Bb3 = pp<p3op4Sp5
+1Bb4 = <<sp4op9
+1Bb5 = <3p5op8
+1Bb6 = <3p6op7
+1Bb7 = pp<p7op6
+1C4 = p11op5
+1Cd7 = p12op4
+1Cd8 = p13op3
+1Cd10 = p14opp
+1Cd13 = p15op
+3Ab4 = p16o
 ---GRID_END---
 
 ---mini_tracker_end---

@@ -1,5 +1,3 @@
-# 搜索功能实现计划
-
 ## 功能概述
 
 搜索功能是DeepResearch系统的核心能力之一，允许系统从多个来源获取信息以响应用户查询。该功能集成了多个搜索提供商（Brave、Serper和Jina），提供了全面的搜索能力，包括网络搜索、结果处理、重排序和去重。搜索功能作为代理模块的关键支持工具，显著增强了系统回答问题和提供信息的能力，使系统能够访问最新和最相关的信息。
@@ -30,12 +28,15 @@ flowchart TD
 
 | 组件名称 | 描述 | 关键功能 | 文件路径 |
 |---------|------|---------|---------|
-| Brave搜索 | 使用Brave搜索API | 执行网络搜索、处理结果 | src/tools/brave-search.ts |
-| Serper搜索 | 使用Serper搜索API | 执行Google搜索、处理结果 | src/tools/serper-search.ts |
-| Jina搜索 | 使用Jina AI搜索服务 | 执行语义搜索、处理结果 | src/tools/jina-search.ts |
-| SearXNG搜索 | 使用SearXNG元搜索引擎 | 执行多引擎搜索、处理结果 | src/tools/searxng-search.ts |
-| 搜索测试 | 测试搜索功能 | 验证搜索功能正确性 | src/tools/__tests__/search.test.ts |
-| 类型定义 | 定义搜索相关类型 | 提供类型安全 | src/types.ts |
+| 搜索服务 | 管理多个搜索提供商 | 提供统一的搜索接口 | src/services/search/search-service.ts |
+| 基础提供商 | 搜索提供商基类 | 定义通用接口和功能 | src/services/search/base-provider.ts |
+| Brave提供商 | 使用Brave搜索API | 执行网络搜索、处理结果 | src/services/search/providers/brave-provider.ts |
+| Serper提供商 | 使用Serper搜索API | 执行Google搜索、处理结果 | src/services/search/providers/serper-provider.ts |
+| Jina提供商 | 使用Jina AI搜索服务 | 执行语义搜索、处理结果 | src/services/search/providers/jina-provider.ts |
+| SearXNG提供商 | 使用SearXNG元搜索引擎 | 执行多引擎搜索、处理结果 | src/services/search/providers/searxng-provider.ts |
+| Duck提供商 | 使用DuckDuckGo搜索 | 执行网络搜索、处理结果 | src/services/search/providers/duck-provider.ts |
+| 搜索类型 | 定义搜索相关类型 | 提供类型安全 | src/services/search/types.ts |
+| 搜索测试 | 测试搜索功能 | 验证搜索功能正确性 | src/services/search/__tests__/search-service.test.ts |
 
 ## 接口定义
 
@@ -45,8 +46,8 @@ flowchart TD
 |---------|------|------|--------|---------|
 | braveSearch | 使用Brave搜索引擎 | query: string | { response: BraveSearchResponse } | `braveSearch("React教程")` |
 | serperSearch | 使用Serper搜索API | query: SERPQuery | { response: SerperSearchResponse } | `serperSearch({q: "React教程"})` |
-| search | 使用Jina搜索 | query: string, tracker?: TokenTracker | { response: SearchResponse } | `search("React教程", tokenTracker)` |
-| searxngSearch | 使用SearXNG元搜索引擎 | query: string, categories?: string[], engines?: string[], language?: string, tracker?: TokenTracker | { response: SearxngSearchResponse } | `searxngSearch("React教程", ["general"], ["google", "bing"], "zh-CN", tokenTracker)` |
+| search | 使用Jina搜索 | query: string tracker?: TokenTracker | { response: SearchResponse } | `search("React教程" tokenTracker)` |
+| searxngSearch | 使用SearXNG元搜索引擎 | query: string categories?: string[] engines?: string[] language?: string tracker?: TokenTracker | { response: SearxngSearchResponse } | `searxngSearch("React教程" ["general"] ["google" "bing"] "zh-CN" tokenTracker)` |
 
 ### 数据结构
 
@@ -55,11 +56,11 @@ flowchart TD
 ```typescript
 // Serper搜索请求
 type SERPQuery = {
-  q: string,
-  hl?: string,
-  gl?: string,
-  location?: string,
-  tbs?: string,
+  q: string
+  hl?: string
+  gl?: string
+  location?: string
+  tbs?: string
 }
 
 // SearXNG搜索请求
@@ -97,14 +98,14 @@ interface SerperSearchResponse {
     descriptionSource: string;
     descriptionLink: string;
     attributes: { [k: string]: string; };
-  },
+  }
   organic: {
     title: string;
     link: string;
     snippet: string;
     date: string;
     siteLinks?: { title: string; link: string; }[];
-    position: number,
+    position: number
   }[];
   topStories?: {
     title: string;
@@ -163,7 +164,7 @@ type UnNormalizedSearchSnippet = {
   description?: string;
   link?: string;
   snippet?: string;
-  weight?: number,
+  weight?: number
   date?: string
 };
 
@@ -189,9 +190,9 @@ type BoostedSearchSnippet = SearchSnippet & {
 
 | 依赖名称 | 描述 | 依赖类型 | 关键接口 |
 |---------|------|---------|---------|
-| axios | HTTP客户端 | npm包 | get, post |
+| axios | HTTP客户端 | npm包 | get post |
 | https | Node.js HTTPS模块 | 内置模块 | request |
-| @agentic/searxng | SearXNG客户端 | npm包 | SearxngClient, search |
+| @agentic/searxng | SearXNG客户端 | npm包 | SearxngClient search |
 | BRAVE_API_KEY | Brave搜索API密钥 | 环境变量 | - |
 | SERPER_API_KEY | Serper搜索API密钥 | 环境变量 | - |
 | JINA_API_KEY | Jina AI API密钥 | 环境变量 | - |
@@ -201,8 +202,8 @@ type BoostedSearchSnippet = SearchSnippet & {
 
 | 模块名称 | 描述 | 依赖类型 | 使用的接口 |
 |---------|------|---------|---------|
-| 代理模块 | 处理用户查询并生成响应 | 内部模块 | braveSearch, serperSearch, search |
-| 工具集模块 | 提供各种工具功能 | 内部模块 | 包含搜索功能 |
+| 代理模块 | 处理用户查询并生成响应 | 内部模块 | SearchService |
+| 服务模块 | 提供各种服务功能 | 内部模块 | 包含搜索服务 |
 | TokenTracker | 跟踪令牌使用情况 | 内部类 | trackUsage |
 
 ## 数据流
@@ -332,11 +333,11 @@ flowchart TD
 | SERPER_API_KEY | Serper搜索API密钥 | 无 | 有效的API密钥 | Serper搜索功能 |
 | JINA_API_KEY | Jina AI API密钥 | 无 | 有效的API密钥 | Jina搜索功能 |
 | SEARXNG_API_BASE_URL | SearXNG API基础URL | http://localhost:28000 | 有效的URL | SearXNG搜索功能 |
-| 超时设置 | 请求超时时间 | Brave/Serper: 10000ms, Jina: 30000ms | 任何毫秒值 | 请求超时行为 |
+| 超时设置 | 请求超时时间 | Brave/Serper: 10000ms Jina: 30000ms | 任何毫秒值 | 请求超时行为 |
 | 结果数量 | 返回的结果数量 | Brave: 10 | 任何正整数 | 搜索结果数量 |
-| 安全搜索 | 是否启用安全搜索 | Brave: 'off' | 'off', 'moderate', 'strict' | 过滤不适当内容 |
-| 搜索类别 | SearXNG搜索类别 | general | general, images, videos, news, map, music, it, science, files, social media | 搜索结果类型 |
-| 搜索引擎 | SearXNG搜索引擎 | 无 | google, bing, brave, duckduckgo, reddit, github等 | 搜索结果来源 |
+| 安全搜索 | 是否启用安全搜索 | Brave: 'off' | 'off' 'moderate' 'strict' | 过滤不适当内容 |
+| 搜索类别 | SearXNG搜索类别 | general | general images videos news map music it science files social media | 搜索结果类型 |
+| 搜索引擎 | SearXNG搜索引擎 | 无 | google bing brave duckduckgo reddit github等 | 搜索结果来源 |
 
 ## 错误处理
 
@@ -352,16 +353,16 @@ flowchart TD
 ## 性能考虑
 
 - **关键性能指标**: 响应时间、准确性、资源使用
-- **优化策略**: 
+- **优化策略**:
   - 实现缓存机制减少重复API调用
   - 并行处理多个搜索提供商的请求
   - 设置合理的超时时间
   - 实现重试机制处理临时失败
-- **潜在瓶颈**: 
+- **潜在瓶颈**:
   - 外部API响应时间
   - 大量并发请求处理
   - API速率限制
-- **扩展性考虑**: 
+- **扩展性考虑**:
   - 添加更多搜索提供商
   - 实现负载均衡策略
   - 优化结果处理和合并算法
@@ -401,15 +402,16 @@ flowchart TD
 | 任务名称 | 描述 | 优先级 | 状态 | 依赖任务 |
 |---------|------|---------|------|---------|
 | SearXNG搜索集成 | 集成SearXNG元搜索引擎 | 高 | 已完成 | 无 |
-| 搜索结果合并 | 实现多提供商结果合并 | 高 | 待实施 | 无 |
+| 搜索结果合并 | 实现多提供商结果合并 | 高 | 已完成 | 无 |
+| 搜索服务重构 | 将搜索工具整合到统一服务中 | 高 | 已完成 | 无 |
 | 搜索结果缓存 | 实现搜索结果缓存 | 中 | 待实施 | 无 |
 | 添加更多提供商 | 集成更多搜索API | 中 | 计划中 | 无 |
 | 改进重排序算法 | 优化搜索结果相关性 | 高 | 待实施 | 无 |
 | 多语言搜索支持 | 增强多语言搜索能力 | 中 | 计划中 | 无 |
 | 搜索结果过滤 | 实现内容过滤功能 | 低 | 待实施 | 无 |
 | 搜索分析 | 添加搜索使用分析 | 低 | 计划中 | 无 |
-| SearXNG搜索测试 | 测试SearXNG搜索功能 | 高 | 待实施 | SearXNG搜索集成 |
-| SearXNG搜索优化 | 优化SearXNG搜索性能和结果质量 | 中 | 待实施 | SearXNG搜索集成, SearXNG搜索测试 |
+| SearXNG搜索测试 | 测试SearXNG搜索功能 | 高 | 已完成 | SearXNG搜索集成 |
+| SearXNG搜索优化 | 优化SearXNG搜索性能和结果质量 | 中 | 待实施 | SearXNG搜索集成 SearXNG搜索测试 |
 
 ## 修订历史
 
@@ -417,3 +419,4 @@ flowchart TD
 |------|------|------|------|
 | 2025/4/10 | 1.0 | 初始版本 | CRCT系统 |
 | 2025/4/10 | 1.1 | 添加SearXNG搜索功能 | CRCT系统 |
+| 2025/4/10 | 1.2 | 更新搜索服务架构，将搜索工具整合到统一服务中 | CRCT系统 |

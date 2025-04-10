@@ -1,6 +1,6 @@
 import { getResponse } from '../agent';
 import { generateObject } from 'ai';
-import { search } from '../tools/jina-search';
+import { SearchService } from '../services/search';
 import { readUrl } from '../tools/read';
 
 // Mock external dependencies
@@ -8,8 +8,18 @@ jest.mock('ai', () => ({
   generateObject: jest.fn()
 }));
 
-jest.mock('../tools/jina-search', () => ({
-  search: jest.fn()
+jest.mock('../services/search', () => ({
+  SearchService: jest.fn().mockImplementation(() => ({
+    searchWithProvider: jest.fn().mockResolvedValue({
+      snippets: [],
+      query: 'test query',
+      provider: 'jina'
+    }),
+    executeSearchQueries: jest.fn().mockResolvedValue({
+      newKnowledge: [],
+      searchedQueries: []
+    })
+  }))
 }));
 
 jest.mock('../tools/read', () => ({
@@ -22,11 +32,6 @@ describe('getResponse', () => {
     (generateObject as jest.Mock).mockResolvedValue({
       object: { action: 'answer', answer: 'mocked response', references: [], think: 'mocked thought' },
       usage: { totalTokens: 100 }
-    });
-
-    // Mock search to return empty results
-    (search as jest.Mock).mockResolvedValue({
-      response: { data: [] }
     });
 
     // Mock readUrl to return empty content

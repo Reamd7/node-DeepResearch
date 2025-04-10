@@ -1,4 +1,5 @@
-import {BoostedSearchSnippet, KnowledgeItem, SearchSnippet, TrackerContext, VisitAction} from "../types";
+import {KnowledgeItem, TrackerContext, VisitAction} from "../types";
+import {BoostedSearchSnippet, SearchSnippet, UnNormalizedSearchSnippet} from "../services/search/types";
 import {getI18nText, smartMergeStrings} from "./text-tools";
 import {rerankDocuments} from "../tools/jina-rerank";
 import {readUrl} from "../tools/read";
@@ -188,7 +189,6 @@ export const countUrlParts = (urlItems: SearchSnippet[]) => {
   let totalUrls = 0;
 
   urlItems.forEach(item => {
-    item = (item as { title: string; url: string; description: string; weight?: number })
     if (!item || !item.url) return; // Skip invalid items
 
     totalUrls++;
@@ -510,6 +510,7 @@ export async function processURLs(
             title: link[0],
             url: nnUrl,
             description: link[0],
+            provider: 'jina' // 默认提供商
           }
           // in-page link has lower initial weight comparing to search links
           if (r.url) {
@@ -703,7 +704,8 @@ export function extractUrlsWithDescription(text: string, contextWindowSize: numb
     results.push({
       url,
       description,
-      title: '' // Maintaining the title field as required by SearchSnippet interface
+      title: '', // Maintaining the title field as required by SearchSnippet interface
+      provider: 'jina' // 默认提供商
     });
   }
 
