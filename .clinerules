@@ -1,0 +1,17 @@
+[LAST_ACTION_STATE]
+last_action: "创建CRCT系统核心文件"
+current_phase: "Set-up/Maintenance"
+next_action: "分析项目结构和依赖关系"
+next_phase: "Set-up/Maintenance"
+
+[CODE_ROOT_DIRECTORIES]
+- src
+- jina-ai/src
+
+[DOC_DIRECTORIES]
+- 
+
+[LEARNING_JOURNAL]
+- 定期更新 cline_docs 目录和指令文件有助于我记住已完成的工作和待完成的任务，避免丢失跟踪。
+- 创建核心文件时，应该基于项目的实际结构和需求进行定制，而不是简单地使用模板。
+- 在初始化阶段，使用占位符（p）标记未验证的依赖关系是一个好方法，后续可以通过分析工具更新为实际依赖关系。
